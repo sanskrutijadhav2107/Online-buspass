@@ -7,7 +7,7 @@ import Register from './Auth/Register';
 import UserHome from './Users/UserHome';
 import ApplicationForm from './Users/ApplicationForm';
 import VerifierHome from './Verifier/VerifierHome';
-import Pending from './Verifier/Pending';
+import Pending from './Verifier/PendingApplications';
 import Rejected from './Verifier/Rejected';
 import Accepted from './Verifier/Accepted';
 import ViewPage from './Verifier/ViewPage';
@@ -21,6 +21,9 @@ import PassIDPage from './components/PassIdPage'; // Import the PassIDPage compo
 import PassPage from './components/PassPage'; // Import the PassPage component  
 import PassRenewalPage  from './Users/ PassRenewalPage';
 import AppliedPassPage from './Users/AppliedPassPage';
+import ViewApplication from './components/ViewApplication';
+
+
 function App() {
   return (
     <>
@@ -67,6 +70,8 @@ function App() {
               <Route path="/pass-page" element={<PassPage />} /> {/* Add the PassPage route */}
               <Route path="/renewal" element={<PassRenewalPage />} /> {/* Add the PassRenewalPage route */}
               <Route path="/applied-pass" element={<AppliedPassPage />} /> {/* Add the AppliedPassPage route */}
+               <Route path="/application/:id" element={<ViewApplication />} />
+
             </Routes>
           </div>
           <MSRTFooter />

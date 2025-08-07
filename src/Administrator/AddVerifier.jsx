@@ -1,25 +1,40 @@
+
 import React, { useState } from "react";
 import AdminSidebar from "../components/AdminSidebar";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase"; // ✅ Make sure this is correctly configured
+import { collection, addDoc } from "firebase/firestore"; // ✅ Import Firestore functions
 
 const AddVerifier = () => {
-  
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Verifier Added:\nName: ${formData.name}\nPhone: ${formData.phone}`);
-    // You can now send this data to backend
+
+    try {
+      await addDoc(collection(db, "verifiers"), {
+        name: formData.name,
+        phone: formData.phone,
+        password: formData.password,
+      });
+
+      alert("Verifier added successfully!");
+      navigate("/ManageVerifier"); // ✅ Redirect to Manage page after successful add
+    } catch (error) {
+      console.error("Error adding verifier: ", error);
+      alert("Failed to add verifier. Please try again.");
+    }
   };
-  const navigate = useNavigate();
 
   return (
     <div className="layout">
@@ -145,7 +160,9 @@ const AddVerifier = () => {
               placeholder="Create a password"
             />
 
-            <button type="submit" className="submit-btn">Add Verifier</button>
+            <button type="submit" className="submit-btn">
+              Add Verifier
+            </button>
           </form>
         </div>
       </div>
