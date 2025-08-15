@@ -24,43 +24,52 @@ const IDCard = ({ idData }) => {
 
   return (
     <>
-      <div ref={cardRef} style={{
-        width: "400px",
-        background: "#a5eee2",
-        padding: "18px 16px",
-        borderRadius: "8px",
-        fontFamily: "'Segoe UI', Arial, sans-serif",
-        boxShadow: "0 2px 10px #0002",
-        margin: "0 auto"
-      }}>
-        <div style={{
-          fontWeight: "bold",
-          display: "flex",
-          justifyContent: "space-between",
-          borderBottom: "1px solid #2224",
-          marginBottom: "8px",
-          fontSize: "1.05rem"
-        }}>
+      <div
+        ref={cardRef}
+        style={{
+          width: "400px",
+          background: "#a5eee2",
+          padding: "18px 16px",
+          borderRadius: "8px",
+          fontFamily: "'Segoe UI', Arial, sans-serif",
+          boxShadow: "0 2px 10px #0002",
+          margin: "0 auto"
+        }}
+      >
+        <div
+          style={{
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "space-between",
+            borderBottom: "1px solid #2224",
+            marginBottom: "8px",
+            fontSize: "1.05rem"
+          }}
+        >
           <span>Maharashtra State Road</span>
           <span>Transport Corporation</span>
         </div>
+
         <div style={{ display: "flex", marginBottom: "10px" }}>
-          <div style={{
-            width: "92px",
-            height: "110px",
-            background: "#fff",
-            border: "1px solid #888",
-            marginRight: "14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontWeight: "bold",
-            color: "#888"
-          }}>
+          <div
+            style={{
+              width: "92px",
+              height: "110px",
+              background: "#fff",
+              border: "1px solid #888",
+              marginRight: "14px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
+              color: "#888"
+            }}
+          >
             Photo
           </div>
           <div>
             <div>ID No.: {idData.idNo}</div>
+            <div>Student ID: {idData.studentId}</div> {/* Added here */}
             <div>Student Name: {idData.name}</div>
             <div>Address: {idData.address}</div>
             <div>Birthdate: {idData.birthdate}</div>
@@ -68,29 +77,36 @@ const IDCard = ({ idData }) => {
             <div>Distance: {idData.distance}</div>
           </div>
         </div>
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontSize: "0.98rem"
-        }}>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: "0.98rem"
+          }}
+        >
           <span>Administrator</span>
           <span>Student Sign</span>
         </div>
       </div>
 
-      <button id="download-btn" style={{
-        marginTop: "20px",
-        padding: "10px 25px",
-        backgroundColor: "#f26725",
-        color: "white",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontSize: "1rem",
-        display: "block",
-        marginLeft: "auto",
-        marginRight: "auto"
-      }} onClick={handleDownload}>
+      <button
+        id="download-btn"
+        style={{
+          marginTop: "20px",
+          padding: "10px 25px",
+          backgroundColor: "#f26725",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          fontSize: "1rem",
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto"
+        }}
+        onClick={handleDownload}
+      >
         Download Pass ID
       </button>
     </>

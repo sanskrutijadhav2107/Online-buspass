@@ -1,12 +1,73 @@
+
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar" ;// Ensure Sidebar matches screenshot style
+import Sidebar from "../components/Sidebar";
+import { db } from "../firebase";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import { format } from "date-fns";
 
 const PassRenewalPage = () => {
-  const [passId, setPassId] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleRenew = () => {
-    alert(`Pass ID ${passId} submitted for renewal.`);
-    // You can handle your backend call here
+  const handleRenew = async () => {
+    if (!studentId.trim()) {
+      setMessage("⚠️ Please enter a Student ID.");
+      return;
+    }
+
+    try {
+      const passesRef = collection(db, "passes");
+      const q = query(passesRef, where("studentId", "==", studentId.trim()));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        setMessage("❌ No pass found for this Student ID.");
+        return;
+      }
+
+      const docRef = snapshot.docs[0].ref;
+      const passData = snapshot.docs[0].data();
+
+      const today = new Date();
+
+      // ✅ Handle passEndDate as string or Timestamp
+      let currentEndDate;
+      if (passData.passEndDate?.toDate) {
+        currentEndDate = passData.passEndDate.toDate();
+      } else if (typeof passData.passEndDate === "string") {
+        const cleaned = passData.passEndDate.replace(/--/g, "-").trim();
+        currentEndDate = new Date(cleaned);
+      } else {
+        setMessage("❌ Invalid date format in database.");
+        return;
+      }
+
+      // ✅ Check if still valid
+      if (currentEndDate >= today) {
+        setMessage(`✅ Pass is still active until ${format(currentEndDate, "yyyy-MM-dd")}.`);
+        return;
+      }
+
+      // 🔄 Renew: save as formatted string
+      const newStart = format(today, "yyyy-MM-dd");
+      const newEnd = format(new Date(today.setDate(today.getDate() + 30)), "yyyy-MM-dd");
+
+      await updateDoc(docRef, {
+        startDate: newStart,
+        passEndDate: newEnd,
+      });
+
+      setMessage(`✅ Pass renewed! Valid until: ${newEnd}`);
+    } catch (error) {
+      console.error("Error renewing pass:", error);
+      setMessage("❌ Failed to renew pass. Try again later.");
+    }
   };
 
   return (
@@ -18,20 +79,25 @@ const PassRenewalPage = () => {
         <hr className="divider" />
 
         <div className="form-box">
-          <label htmlFor="passId" className="label">
-            Enter Pass Id Number :
+          <label htmlFor="studentId" className="label">
+            Enter Student ID:
           </label>
           <input
             type="text"
-            id="passId"
-            value={passId}
-            onChange={(e) => setPassId(e.target.value)}
+            id="studentId"
+            value={studentId}
+            onChange={(e) => setStudentId(e.target.value)}
             className="input-box"
-            placeholder="Enter your pass ID"
+            placeholder="Enter your Student ID"
           />
           <button className="renew-btn" onClick={handleRenew}>
             Renew
           </button>
+          {message && (
+            <p style={{ marginTop: "20px", fontWeight: "bold", color: "#333" }}>
+              {message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -83,7 +149,7 @@ const PassRenewalPage = () => {
         }
 
         .renew-btn {
-          background-color: #4a90e2;
+          background-color: #d3541a;
           color: white;
           font-size: 16px;
           padding: 10px 30px;
@@ -93,7 +159,7 @@ const PassRenewalPage = () => {
         }
 
         .renew-btn:hover {
-          background-color: #357ab8;
+          background-color: #b84310;
         }
       `}</style>
     </div>

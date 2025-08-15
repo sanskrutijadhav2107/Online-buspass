@@ -70,7 +70,8 @@ function App() {
               <Route path="/pass-page" element={<PassPage />} /> {/* Add the PassPage route */}
               <Route path="/renewal" element={<PassRenewalPage />} /> {/* Add the PassRenewalPage route */}
               <Route path="/applied-pass" element={<AppliedPassPage />} /> {/* Add the AppliedPassPage route */}
-               <Route path="/application/:id" element={<ViewApplication />} />
+              <Route path="/application/:id" element={<ViewApplication />} />
+              <Route path="/pass/:id" element={<PassPage />} />
 
             </Routes>
           </div>

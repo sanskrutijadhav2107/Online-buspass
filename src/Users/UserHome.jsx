@@ -1,37 +1,36 @@
 
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import IDCard from "../components/IDCard";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [pressedButton, setPressedButton] = useState(null);
+  const [studentId, setStudentId] = useState("");
 
-    const handleApplyClick = () => {
-    navigate('/ApplicationForm'); // ✅ Navigate to Application Form page
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("studentData"));
+    if (storedData && storedData.id) {
+      setStudentId(storedData.id);
+    }
+  }, []);
+
+  const handleApplyClick = () => {
+    navigate('/ApplicationForm');
   };
 
-
-  const handleMouseDown = (index) => {
-    setPressedButton(index);
-  };
-
-  const handleMouseUp = () => {
-    setPressedButton(null);
-  };
+  // ... rest of your existing layout code
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
-      
-      <div style={{ marginTop:"150px",marginLeft: "", padding: "30px", width: "100%" }}>
+      <div style={{ marginTop:"150px", padding: "30px", width: "100%" }}>
         <h2 style={{ color: "#f26725", textAlign: "center" }}>Online Bus Pass</h2>
 
         <div style={{ marginTop: "40px", display: "flex", justifyContent: "center" }}>
           <div>
             <button style={buttonHeader}>Pass Type</button>
-
             {["Student", "Employee"].map((type, index) => (
               <div style={rowStyle} key={index}>
                 <div style={boxStyle}>{type}</div>
@@ -41,8 +40,8 @@ const HomePage = () => {
                     transform: pressedButton === index ? "scale(0.95)" : "scale(1)",
                     transition: "transform 0.1s ease-in-out",
                   }}
-                  onMouseDown={() => handleMouseDown(index)}
-                  onMouseUp={handleMouseUp}
+                  onMouseDown={() => setPressedButton(index)}
+                  onMouseUp={() => setPressedButton(null)}
                   onClick={handleApplyClick}
                 >
                   Apply
@@ -51,6 +50,8 @@ const HomePage = () => {
             ))}
           </div>
         </div>
+
+        
       </div>
     </div>
   );
@@ -96,4 +97,5 @@ const applyButton = {
 };
 
 export default HomePage;
+
 

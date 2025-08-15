@@ -1,12 +1,39 @@
 
-import React, { useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PassCard from "./PassCard";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import Sidebar from "./Sidebar"; // Assuming you already have Sidebar component
+import Sidebar from "./Sidebar";
+import { db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const PassPage = () => {
+  const [passData, setPassData] = useState(null);
   const passRef = useRef();
+
+  useEffect(() => {
+    const studentData = JSON.parse(localStorage.getItem("studentData"));
+    if (!studentData?.id) {
+      alert("No student logged in");
+      return;
+    }
+
+    const fetchPass = async () => {
+      try {
+        const passRef = doc(db, "passes", studentData.id);
+        const passSnap = await getDoc(passRef);
+        if (passSnap.exists()) {
+          setPassData(passSnap.data());
+        } else {
+          console.error("Pass not found!");
+        }
+      } catch (err) {
+        console.error("Error fetching pass:", err);
+      }
+    };
+
+    fetchPass();
+  }, []);
 
   const handleDownload = () => {
     html2canvas(passRef.current).then((canvas) => {
@@ -20,40 +47,25 @@ const PassPage = () => {
     });
   };
 
-  const dummyData = {
-    idNo: "23030403245009",
-    name: "Shravan Devrukhkar",
-    address: "Devrukh, Ratnagiri",
-    birthdate: "2003-01-01",
-    age: "21",
-    college: "XYZ Polytechnic College",
-    from: "Devrukh",
-    to: "Ratnagiri",
-    startDate: "01/08/2025",
-    endDate: "31/08/2025",
-  };
-
   return (
     <div className="main-layout">
       <Sidebar />
-
       <div className="page-container">
         <h2 className="heading">Monthly Bus Pass (31 Days)</h2>
-
         <div className="card-container" ref={passRef}>
-          <PassCard {...dummyData} />
+          {passData ? <PassCard {...passData} /> : <p>Loading pass...</p>}
         </div>
-
-        <button className="download-btn" onClick={handleDownload}>
-          Download Pass
-        </button>
+        {passData && (
+          <button className="download-btn" onClick={handleDownload}>
+            Download Pass
+          </button>
+        )}
       </div>
 
       <style>{`
         .main-layout {
           display: flex;
         }
-
         .page-container {
           flex: 1;
           display: flex;
@@ -62,16 +74,13 @@ const PassPage = () => {
           padding: 40px 20px;
           font-family: Arial, sans-serif;
         }
-
         .heading {
           margin-bottom: 20px;
           font-size: 22px;
         }
-
         .card-container {
           margin-bottom: 25px;
         }
-
         .download-btn {
           padding: 12px 25px;
           background-color: #f26725;
@@ -82,7 +91,6 @@ const PassPage = () => {
           cursor: pointer;
           transition: background-color 0.3s ease;
         }
-
         .download-btn:hover {
           background-color: #d3541a;
         }

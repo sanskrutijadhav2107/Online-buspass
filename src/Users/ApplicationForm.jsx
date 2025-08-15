@@ -1,15 +1,15 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import axios from 'axios';
 
-// ✅ Cloudinary Upload Function
 const uploadToCloudinary = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "buspass_upload"); // 🛠 Replace with your Cloudinary preset
+  formData.append("upload_preset", "buspass_upload");
 
   try {
     const res = await axios.post("https://api.cloudinary.com/v1_1/dxkpotnyb/upload", formData);
@@ -22,7 +22,7 @@ const uploadToCloudinary = async (file) => {
 
 const StudentForm = () => {
   const navigate = useNavigate();
-  const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB limit
+  const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
   const [files, setFiles] = useState({
     declaration: null,
@@ -39,25 +39,21 @@ const StudentForm = () => {
   const [to, setTo] = useState('');
 
   const [studentData, setStudentData] = useState({
+    id: '', // student ID
     name: '',
     birthdate: '',
     schoolOrCollege: '',
     phone: ''
   });
 
-  useEffect(() => {
-    const stored = localStorage.getItem('studentData');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setStudentData({
-        name: parsed.name || '',
-        birthdate: parsed.birthdate || '',
-        schoolOrCollege: parsed.schoolOrCollege || '',
-        phone: parsed.phone || ''
-      });
-    }
-  }, []);
 
+  useEffect(() => {
+  const storedData = localStorage.getItem('studentData');
+  if (storedData) {
+    const parsedData = JSON.parse(storedData);
+    setStudentData(parsedData); // parsedData.id is the studentId
+  }
+}, []);
   const handleFileChange = (key, file) => {
     if (file) {
       if (file.size <= MAX_FILE_SIZE) {
@@ -69,8 +65,8 @@ const StudentForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!studentData.phone || Object.values(files).some(file => !file)) {
-      alert('Please complete all fields and upload all documents.');
+    if (!studentData.phone || !studentData.id || Object.values(files).some(file => !file)) {
+      alert('Please complete all fields, including Student ID, and upload all documents.');
       return;
     }
 
@@ -87,6 +83,7 @@ const StudentForm = () => {
       }
 
       await addDoc(collection(db, 'applications'), {
+        studentId: studentData.id, // pass student ID
         studentPhone: studentData.phone,
         name: studentData.name,
         birthdate: studentData.birthdate,
@@ -151,12 +148,39 @@ const StudentForm = () => {
 
   const handleLocationChange = (fromLoc, toLoc) => {
     let dist = '';
-    if ((fromLoc === 'Mahad' && toLoc === 'Lonere') || (fromLoc === 'Lonere' && toLoc === 'Mahad')) {
+    if ((fromLoc === 'Mahad' && toLoc === 'Lonere Vidyapit') || (fromLoc === 'Lonere Vidyapit' && toLoc === 'Mahad')) {
       dist = 21;
-    } else if ((fromLoc === 'Birwadi' && toLoc === 'Lonere') || (fromLoc === 'Lonere' && toLoc === 'Birwadi')) {
+    } else if ((fromLoc === 'Birwadi' && toLoc === 'Lonere Vidyapit') || (fromLoc === 'Lonere Vidyapit' && toLoc === 'Birwadi')) {
       dist = 28;
-    } else if ((fromLoc === 'Mahad' && toLoc === 'Mangaon') || (fromLoc === 'Mangaon' && toLoc === 'Mahad')) {
-      dist = 36;
+    } else if ((fromLoc === 'Birwadi' && toLoc === 'Mahad') || (fromLoc === 'Mahad' && toLoc === 'Birwadi')) {
+      dist = 14;
+    }
+    else if ((fromLoc === 'Poladpur' && toLoc === 'Lonere Vidyapit') || (fromLoc === 'Lonere Vidyapit' && toLoc === 'Poladpur')) {
+      dist = 38;
+    }
+    else if ((fromLoc === 'Poladpur' && toLoc === 'Mahad') || (fromLoc === 'Mahad' && toLoc === 'Poladpur')) {
+      dist = 20;
+    }
+    else if ((fromLoc === 'Mahad' && toLoc === 'Goregaon') || (fromLoc === 'Goregaon' && toLoc === 'Mahad')) {
+      dist = 21;
+    }
+    else if ((fromLoc === 'Mahad' && toLoc === 'Mangaon') || (fromLoc === 'Mangaon' && toLoc === 'Mahad')) {
+      dist = 28;
+    }
+    else if ((fromLoc === 'Mahad' && toLoc === 'Indapur') || (fromLoc === 'Indapur' && toLoc === 'Mahad')) {
+      dist = 37;
+    }
+    else if ((fromLoc === 'Mahad' && toLoc === 'Kolad') || (fromLoc === 'Kolad' && toLoc === 'Mahad')) {
+      dist = 49;
+    }
+    else if ((fromLoc === 'Mahad' && toLoc === 'Vihnere') || (fromLoc === 'Vihnere' && toLoc === 'Mahad')) {
+      dist = 24;
+    }
+    else if ((fromLoc === 'Sandoshi' && toLoc === 'Lonere Vidyapit') || (fromLoc === 'Lonere Vidyapit' && toLoc === 'Sandoshi')) {
+      dist = 34;
+    }
+    else if ((fromLoc === 'Sandoshi' && toLoc === 'Mahad') || (fromLoc === 'Mahad' && toLoc === 'Sandoshi')) {
+      dist = 33;
     }
 
     if (dist) {
@@ -185,6 +209,7 @@ const StudentForm = () => {
       <h2 style={styles.title}>Application Form</h2>
       <div style={styles.section}>
         <h3 style={styles.header}>Basic Info</h3>
+        <input placeholder="Student ID" style={styles.input} value={studentData.id} readOnly />
         <input placeholder="Name" style={styles.input} value={studentData.name} readOnly />
         <input placeholder="Date of Birth" type="date" style={styles.input} value={studentData.birthdate} readOnly />
         <input placeholder="School / College name" style={styles.input} value={studentData.schoolOrCollege} readOnly />
@@ -220,14 +245,28 @@ const StudentForm = () => {
           <option value="">Select From</option>
           <option value="Mahad">Mahad</option>
           <option value="Birwadi">Birwadi</option>
-          <option value="Lonere">Lonere</option>
+          <option value="Lonere Vidyapit">Lonere Vidyapit</option>
+          <option value="Poladpur">Poladpur</option>
+          <option value="Vihnere">Vihnere</option>
+          <option value="Mangaon">Mangaon</option>
+          <option value="Goregaon">Goregaon</option>
+          <option value="Indapur">Indapur</option>
+          <option value="Sandoshi">Sandoshi</option>
+          <option value="Kolad">Kolad</option>
         </select>
 
         <select value={to} onChange={handleToChange} style={styles.input}>
           <option value="">Select To</option>
-          <option value="Lonere">Lonere</option>
           <option value="Mahad">Mahad</option>
           <option value="Birwadi">Birwadi</option>
+          <option value="Lonere Vidyapit">Lonere Vidyapit</option>
+          <option value="Poladpur">Poladpur</option>
+          <option value="Vihnere">Vihnere</option>
+          <option value="Mangaon">Mangaon</option>
+          <option value="Goregaon">Goregaon</option>
+          <option value="Indapur">Indapur</option>
+          <option value="Sandoshi">Sandoshi</option>
+          <option value="Kolad">Kolad</option>
         </select>
 
         <input placeholder="Distance in KM" value={distance} readOnly style={styles.input} />
@@ -310,4 +349,3 @@ const styles = {
 };
 
 export default StudentForm;
-
