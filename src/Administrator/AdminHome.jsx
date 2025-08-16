@@ -149,7 +149,7 @@ const AdminHomePage = () => {
         <div className="section">
           <h2>Application Stack</h2>
 
-          <div className="card" onClick={() => navigate("/pending")}>
+          <div className="card" onClick={() => navigate("/Pending")}>
             <div className="label">
               <FaClipboardList className="icon" />
               Pending Applications
@@ -157,7 +157,7 @@ const AdminHomePage = () => {
             <div className="badge">{todayCounts.pending}</div>
           </div>
 
-          <div className="card" onClick={() => navigate("/approved")}>
+          <div className="card" onClick={() => navigate("/Accepted")}>
             <div className="label">
               <FaCheckCircle className="icon" />
               Approved Applications
@@ -165,7 +165,7 @@ const AdminHomePage = () => {
             <div className="badge">{todayCounts.approved}</div>
           </div>
 
-          <div className="card" onClick={() => navigate("/rejected")}>
+          <div className="card" onClick={() => navigate("/Rejected")}>
             <div className="label">
               <FaTimesCircle className="icon" />
               Rejected Applications

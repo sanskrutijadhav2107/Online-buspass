@@ -1,96 +1,149 @@
-import React from 'react';
 
-const ApplicantList = () => {
-  const applicants = [
-    {
-      name: 'Sanskruti Jadhav',
-      id: '86061157509162',
-    },
-    // You can add more applicants here
-  ];
+import React, { useEffect, useState } from "react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebase"; // adjust path if needed
 
-  const handleView = (id) => {
-    alert(`Viewing details for applicant ID: ${id}`);
-    // Add actual logic here
-  };
+const Accepted = () => {
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAcceptedApplications = async () => {
+      setLoading(true);
+      try {
+        const storedData = JSON.parse(localStorage.getItem("studentData"));
+        if (!storedData?.id) {
+          setApplications([]);
+          setLoading(false);
+          return;
+        }
+
+        // accepted statuses to check
+        const possibleStatuses = ["accepted", "verified", "approved"];
+        let allResults = [];
+
+        for (let status of possibleStatuses) {
+          const q = query(
+            collection(db, "applications"),
+            where("studentId", "==", storedData.id),
+            where("status", "==", status)
+          );
+          const querySnapshot = await getDocs(q);
+          const data = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          allResults = [...allResults, ...data];
+        }
+
+        setApplications(allResults);
+      } catch (error) {
+        console.error("Error fetching accepted applications:", error);
+        setApplications([]);
+      }
+      setLoading(false);
+    };
+
+    fetchAcceptedApplications();
+  }, []);
 
   return (
     <>
       <style>{`
-        .container {
-          padding: 20px;
-          font-family: Arial, sans-serif;
+        .accepted-container {
+          padding: 30px;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #f9fafb;
+          min-height: 100vh;
         }
 
-        .heading {
+        .accepted-heading {
           font-weight: bold;
-          font-size: 24px;
+          font-size: 26px;
           margin-bottom: 20px;
-          text-shadow: 1px 1px 2px #ccc;
+          color: #2e7d32;
+          text-align: center;
         }
 
-        table {
+        .accepted-table {
           width: 100%;
           border-collapse: collapse;
+          margin-top: 20px;
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        th, td {
-          border: 1px solid #ccc;
-          padding: 10px;
+        .accepted-table th, 
+        .accepted-table td {
+          border: 1px solid #e0e0e0;
+          padding: 12px 15px;
           text-align: left;
         }
 
-        th {
-          background-color: #f2f2f2;
+        .accepted-table th {
+          background-color: #e8f5e9;
+          color: #2e7d32;
+          font-size: 15px;
         }
 
-        .view-button {
-          background-color: #ff5722;
-          color: white;
-          border: none;
-          padding: 6px 12px;
-          cursor: pointer;
-          border-radius: 4px;
+        .accepted-table td {
+          font-size: 14px;
+          color: #333;
         }
 
-        .view-button:hover {
-          background-color: #e64a19;
+        .status {
+          color: #2e7d32;
+          font-weight: bold;
+        }
+
+        .loading, .no-data {
+          font-size: 18px;
+          text-align: center;
+          margin-top: 40px;
+          color: #777;
+        }
+
+        .no-data {
+          font-style: italic;
         }
       `}</style>
 
-      <div className="container">
-        <h2 className="heading">Applicant List</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Applicant Name</th>
-              <th>Applicant Id</th>
-              <th>Verify</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applicants.map((applicant, index) => (
-              <tr key={index}>
-                <td>{applicant.name}</td>
-                <td>{applicant.id}</td>
-                <td>
-                  <button
-                    className="view-button"
-                    onClick={() => handleView(applicant.id)}
-                  >
-                    View
-                  </button>
-                </td>
+      <div className="accepted-container">
+        <h2 className="accepted-heading">✅ Accepted Applications</h2>
+
+        {loading ? (
+          <p className="loading">Loading...</p>
+        ) : applications.length === 0 ? (
+          <p className="no-data">No accepted pass found.</p>
+        ) : (
+          <table className="accepted-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Pass Type</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {applications.map((app) => (
+                <tr key={app.id}>
+                  <td>{app.name}</td>
+                  <td>{app.from}</td>
+                  <td>{app.to}</td>
+                  <td>{app.passType}</td>
+                  <td className="status">{app.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </>
   );
 };
 
-export default ApplicantList;
-
-
-
+export default Accepted;

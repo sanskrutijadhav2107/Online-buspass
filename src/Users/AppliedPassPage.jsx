@@ -1,21 +1,52 @@
-import React, { useState } from "react";
-import Sidebar from "../components/Sidebar"; // Reuse your existing Sidebar
+
+
+import React, { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import { db } from "../firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const AppliedPassPage = () => {
   const [activeTab, setActiveTab] = useState("underScrutiny");
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "underScrutiny":
-        return <p className="status-msg">No Scrutiny Applications</p>;
-      case "verified":
-        return <p className="status-msg">No Verified Applications</p>;
-      case "rejected":
-        return <p className="status-msg">No Rejected Applications</p>;
-      default:
-        return null;
-    }
-  };
+  // Fetch student's applied passes
+  useEffect(() => {
+    const fetchApplications = async () => {
+      setLoading(true);
+      const storedData = JSON.parse(localStorage.getItem("studentData"));
+      if (!storedData?.id) {
+        setApplications([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // map "verified" tab to actual Firestore value "active"
+        const statusToQuery =
+          activeTab === "verified" ? "active" : activeTab;
+
+        const q = query(
+          collection(db, "passes"),
+          where("studentId", "==", storedData.id),
+          where("status", "==", statusToQuery)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setApplications(data);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        setApplications([]);
+      }
+      setLoading(false);
+    };
+
+    fetchApplications();
+  }, [activeTab]);
 
   return (
     <div className="applied-pass-layout">
@@ -44,7 +75,28 @@ const AppliedPassPage = () => {
           </button>
         </div>
 
-        <div className="tab-content">{renderContent()}</div>
+        <div className="tab-content">
+          {loading ? (
+            <p className="status-msg">Loading...</p>
+          ) : applications.length === 0 ? (
+            <p className="status-msg">No {activeTab} applications</p>
+          ) : (
+            <ul className="application-list">
+              {applications.map((app) => (
+                <li key={app.id} className="application-card">
+                  <p><b>Name:</b> {app.name}</p>
+                  <p><b>From:</b> {app.from}</p>
+                  <p><b>To:</b> {app.to}</p>
+                  <p><b>Pass Type:</b> {app.passType}</p>
+                  <p>
+                    <b>Status:</b>{" "}
+                    {app.status === "active" ? "verified" : app.status}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       <style>{`
@@ -94,6 +146,19 @@ const AppliedPassPage = () => {
         .status-msg {
           font-size: 18px;
           color: #555;
+        }
+
+        .application-list {
+          list-style: none;
+          padding: 0;
+        }
+
+        .application-card {
+          background: #fff;
+          padding: 15px;
+          margin-bottom: 10px;
+          border-radius: 8px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
       `}</style>
     </div>

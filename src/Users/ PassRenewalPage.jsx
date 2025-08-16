@@ -1,4 +1,5 @@
 
+
 import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { db } from "../firebase";
@@ -36,34 +37,58 @@ const PassRenewalPage = () => {
 
       const today = new Date();
 
-      // ✅ Handle passEndDate as string or Timestamp
-      let currentEndDate;
+      // ✅ Parse passEndDate
+      let currentPassEnd;
       if (passData.passEndDate?.toDate) {
-        currentEndDate = passData.passEndDate.toDate();
+        currentPassEnd = passData.passEndDate.toDate();
       } else if (typeof passData.passEndDate === "string") {
-        const cleaned = passData.passEndDate.replace(/--/g, "-").trim();
-        currentEndDate = new Date(cleaned);
-      } else {
-        setMessage("❌ Invalid date format in database.");
+        currentPassEnd = new Date(passData.passEndDate.replace(/--/g, "-").trim());
+      }
+
+      // ✅ Parse idEndDate
+      let idEnd;
+      if (passData.idEndDate?.toDate) {
+        idEnd = passData.idEndDate.toDate();
+      } else if (typeof passData.idEndDate === "string") {
+        idEnd = new Date(passData.idEndDate.replace(/--/g, "-").trim());
+      }
+
+      // ❌ If ID expired → block renewal
+      if (idEnd < today) {
+        setMessage(
+          `❌ Your ID expired on ${format(
+            idEnd,
+            "yyyy-MM-dd"
+          )}. Please renew your ID card first.`
+        );
         return;
       }
 
-      // ✅ Check if still valid
-      if (currentEndDate >= today) {
-        setMessage(`✅ Pass is still active until ${format(currentEndDate, "yyyy-MM-dd")}.`);
+      // ✅ If pass still valid
+      if (currentPassEnd >= today) {
+        setMessage(
+          `✅ Your pass is still active until ${format(
+            currentPassEnd,
+            "yyyy-MM-dd"
+          )}.`
+        );
         return;
       }
 
-      // 🔄 Renew: save as formatted string
-      const newStart = format(today, "yyyy-MM-dd");
-      const newEnd = format(new Date(today.setDate(today.getDate() + 30)), "yyyy-MM-dd");
+      // 🔄 Renew pass for 30 days
+      const newStart = format(new Date(), "yyyy-MM-dd");
+      const newEnd = format(
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        "yyyy-MM-dd"
+      );
 
       await updateDoc(docRef, {
         startDate: newStart,
         passEndDate: newEnd,
+        status: "active", // ✅ reset status
       });
 
-      setMessage(`✅ Pass renewed! Valid until: ${newEnd}`);
+      setMessage(`✅ Pass renewed successfully! New expiry: ${newEnd}`);
     } catch (error) {
       console.error("Error renewing pass:", error);
       setMessage("❌ Failed to renew pass. Try again later.");
@@ -94,72 +119,94 @@ const PassRenewalPage = () => {
             Renew
           </button>
           {message && (
-            <p style={{ marginTop: "20px", fontWeight: "bold", color: "#333" }}>
-              {message}
-            </p>
+            <p className="message-box">{message}</p>
           )}
         </div>
       </div>
 
+      {/* ✅ Styling */}
       <style>{`
         .renewal-layout {
           display: flex;
+          min-height: 100vh;
+          background-color: #f9f9f9;
         }
 
         .renewal-content {
           flex: 1;
           padding: 40px;
-          font-family: Arial, sans-serif;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .page-title {
           color: #e66125;
-          font-size: 24px;
+          font-size: 28px;
+          font-weight: bold;
           margin-bottom: 10px;
         }
 
         .divider {
-          border: 1px solid #ccc;
+          border: none;
+          border-top: 2px solid #e66125;
+          width: 100px;
           margin-bottom: 30px;
         }
 
         .form-box {
-          background-color: #f6f6f6;
+          background-color: #ffffff;
           padding: 40px;
           max-width: 600px;
           margin: auto;
           text-align: center;
-          border-radius: 8px;
+          border-radius: 12px;
+          box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
         }
 
         .label {
           display: block;
           font-size: 18px;
           margin-bottom: 15px;
-          color: #333;
+          color: #444;
+          font-weight: 500;
         }
 
         .input-box {
           width: 100%;
           padding: 14px;
           font-size: 16px;
-          border: 1px solid #aaa;
-          border-radius: 5px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
           margin-bottom: 20px;
+          outline: none;
+          transition: border 0.3s;
+        }
+
+        .input-box:focus {
+          border-color: #e66125;
+          box-shadow: 0 0 5px rgba(230, 97, 37, 0.3);
         }
 
         .renew-btn {
-          background-color: #d3541a;
+          background-color: #e66125;
           color: white;
-          font-size: 16px;
-          padding: 10px 30px;
+          font-size: 18px;
+          padding: 12px 40px;
           border: none;
-          border-radius: 5px;
+          border-radius: 8px;
           cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s;
         }
 
         .renew-btn:hover {
-          background-color: #b84310;
+          background-color: #c74e1c;
+          transform: scale(1.05);
+        }
+
+        .message-box {
+          margin-top: 20px;
+          font-weight: bold;
+          font-size: 16px;
+          color: #333;
         }
       `}</style>
     </div>

@@ -1,96 +1,152 @@
-import React from 'react';
+
+import React, { useEffect, useState } from "react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebase"; // adjust path
+import { useNavigate } from "react-router-dom";
 
 const ApplicantList = () => {
-  const applicants = [
-    {
-      name: 'Sanskruti Jadhav',
-      id: '86061157509162',
-    },
-    // You can add more applicants here
-  ];
+  const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const handleView = (id) => {
-    alert(`Viewing details for applicant ID: ${id}`);
-    // Add actual logic here
+    navigate(`/application/${id}`); // details page
   };
+
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      setLoading(true);
+      try {
+        const q = query(
+          collection(db, "applications"),
+          where("status", "==", "pending") // 👈 same as backend query
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedApplicants = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setApplicants(fetchedApplicants);
+      } catch (error) {
+        console.error("Error fetching applicants:", error);
+        setApplicants([]);
+      }
+      setLoading(false);
+    };
+
+    fetchApplicants();
+  }, []);
 
   return (
     <>
       <style>{`
         .container {
-          padding: 20px;
+          padding: 30px;
           font-family: Arial, sans-serif;
         }
 
         .heading {
           font-weight: bold;
-          font-size: 24px;
+          font-size: 26px;
           margin-bottom: 20px;
-          text-shadow: 1px 1px 2px #ccc;
+          color: #ff5722;
+          text-align: center;
         }
 
         table {
           width: 100%;
           border-collapse: collapse;
+          margin-top: 20px;
+          background: white;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
 
         th, td {
-          border: 1px solid #ccc;
-          padding: 10px;
+          border: 1px solid #e0e0e0;
+          padding: 12px 15px;
           text-align: left;
         }
 
         th {
-          background-color: #f2f2f2;
+          background-color: #ffe0d6;
+          color: #333;
+          font-size: 15px;
+        }
+
+        td {
+          font-size: 14px;
+          color: #444;
         }
 
         .view-button {
           background-color: #ff5722;
           color: white;
           border: none;
-          padding: 6px 12px;
+          padding: 6px 14px;
           cursor: pointer;
           border-radius: 4px;
+          font-weight: bold;
         }
 
         .view-button:hover {
           background-color: #e64a19;
         }
+
+        .loading, .no-data {
+          font-size: 18px;
+          text-align: center;
+          margin-top: 40px;
+          color: #777;
+        }
+
+        .no-data {
+          font-style: italic;
+        }
       `}</style>
 
       <div className="container">
         <h2 className="heading">Applicant List</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Applicant Name</th>
-              <th>Applicant Id</th>
-              <th>Verify</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applicants.map((applicant, index) => (
-              <tr key={index}>
-                <td>{applicant.name}</td>
-                <td>{applicant.id}</td>
-                <td>
-                  <button
-                    className="view-button"
-                    onClick={() => handleView(applicant.id)}
-                  >
-                    View
-                  </button>
-                </td>
+
+        {loading ? (
+          <p className="loading">Loading applicants...</p>
+        ) : applicants.length === 0 ? (
+          <p className="no-data">No pending applicants found.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Pass Type</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {applicants.map((applicant) => (
+                <tr key={applicant.id}>
+                  <td>{applicant.name}</td>
+                  <td>{applicant.from}</td>
+                  <td>{applicant.to}</td>
+                  <td>{applicant.passType}</td>
+                  <td>
+                    <button
+                      className="view-button"
+                      onClick={() => handleView(applicant.id)}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </>
   );
 };
 
 export default ApplicantList;
-
-
-

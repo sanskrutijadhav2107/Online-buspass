@@ -22,7 +22,7 @@ import PassPage from './components/PassPage'; // Import the PassPage component
 import PassRenewalPage  from './Users/ PassRenewalPage';
 import AppliedPassPage from './Users/AppliedPassPage';
 import ViewApplication from './components/ViewApplication';
-
+import ProfilePage from './components/profilePage'; // Import the ProfilePage component
 
 function App() {
   return (
@@ -72,6 +72,8 @@ function App() {
               <Route path="/applied-pass" element={<AppliedPassPage />} /> {/* Add the AppliedPassPage route */}
               <Route path="/application/:id" element={<ViewApplication />} />
               <Route path="/pass/:id" element={<PassPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+
 
             </Routes>
           </div>
