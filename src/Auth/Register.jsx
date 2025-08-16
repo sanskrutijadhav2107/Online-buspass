@@ -56,10 +56,12 @@ export default function Register() {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundImage: 'url("https://images.unsplash.com/photo-1521790360288-120af5f2d57d")',
+      backgroundImage: 'url("https://t4.ftcdn.net/jpg/13/06/43/63/360_F_1306436399_lKMO2qWsMuqjll9kqeklGdz6J5du3YQK.jpg")',
       backgroundSize: 'cover',
       height: '100vh',
       padding: '30px',
+
+          
     },
     formWrapper: {
       backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -74,7 +76,9 @@ export default function Register() {
       fontSize: '28px',
       fontWeight: 'bold',
       marginBottom: '20px',
-      color: '#333',
+      color: '#d1541d',
+       
+         
     },
     formGroup: {
       marginBottom: '15px',

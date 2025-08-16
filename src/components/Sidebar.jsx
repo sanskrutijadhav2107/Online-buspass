@@ -16,21 +16,22 @@ import {
 
 // Styled Components
 const SidebarContainer = styled.div`
-  width: 250px;
+  width: 270px;
   background-color: #ffffff;
   border-right: 5px solid #f26725;
   height: 100vh;
   padding-top: 20px;
   left: 0;
   font-family: Arial, sans-serif;
-  position: ;
+ 
 `;
 
 const SidebarLink = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 20px;
+  
+  padding: 20px 25px; 
   color: #333;
   text-decoration: none;
   font-weight: 500;

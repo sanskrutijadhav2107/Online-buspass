@@ -65,6 +65,7 @@ const PassIDPage = () => {
         .main-content {
           flex: 1;
           padding: 40px;
+        
         }
 
         .title {

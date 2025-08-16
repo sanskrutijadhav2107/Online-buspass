@@ -27,7 +27,7 @@ const IDCard = ({ idData }) => {
       <div
         ref={cardRef}
         style={{
-          width: "400px",
+          width: "500px",
           background: "#a5eee2",
           padding: "18px 16px",
           borderRadius: "8px",
@@ -53,8 +53,8 @@ const IDCard = ({ idData }) => {
         <div style={{ display: "flex", marginBottom: "10px" }}>
           <div
             style={{
-              width: "92px",
-              height: "110px",
+              width: "170px",
+              height: "150px",
               background: "#fff",
               border: "1px solid #888",
               marginRight: "14px",
@@ -67,22 +67,27 @@ const IDCard = ({ idData }) => {
           >
             Photo
           </div>
+         
+
           <div>
-            <div>ID No.: {idData.idNo}</div>
-            <div>Student ID: {idData.studentId}</div> {/* Added here */}
-            <div>Student Name: {idData.name}</div>
-            <div>Address: {idData.address}</div>
-            <div>Birthdate: {idData.birthdate}</div>
-            <div>College Name: {idData.college}</div>
-            <div>Distance: {idData.distance}</div>
-          </div>
+             <div><strong>ID No.:</strong> {idData.idNo}</div>
+             <div><strong>Student ID:</strong> {idData.studentId}</div>
+             <div><strong>Student Name:</strong> {idData.name}</div>
+             <div><strong>Address:</strong> {idData.address}</div>
+             <div><strong>Birthdate:</strong> {idData.birthdate}</div>
+             <div><strong>College Name:</strong> {idData.college}</div>
+            <div><strong>Distance:</strong> {idData.distance}</div>
+           </div>
+
         </div>
 
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
-            fontSize: "0.98rem"
+            fontSize: "0.98rem",
+            fontWeight: "bold"
+          
           }}
         >
           <span>Administrator</span>
