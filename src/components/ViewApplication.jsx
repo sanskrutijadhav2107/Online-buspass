@@ -53,20 +53,26 @@ const ViewApplication = () => {
       passValidTillDate.setMonth(passValidTillDate.getMonth() + 1);
       const passEndDate = passValidTillDate.toISOString().split('T')[0];
 
+     
+
       const passData = {
-        studentId: application.studentId, // Use SAME student ID
-        name: application.name,
-        address: application.from,
-        birthdate: application.birthdate || "N/A",
-        age: application.age || "N/A",
-        college: application.schoolOrCollege,
-        from: application.from,
-        to: application.to,
-        startDate,
-        passEndDate,
-        idEndDate,
-        passType: application.passType
-      };
+  studentId: application.studentId,
+  name: application.name,
+  address: application.from,
+  birthdate: application.birthdate || "N/A",
+  age: application.age || "N/A",
+  college: application.schoolOrCollege,
+  from: application.from,
+  to: application.to,
+  startDate,
+  passEndDate,
+  idEndDate,
+  passType: application.passType,
+
+  // 👇 add this line — pulls directly from your Cloudinary field
+  photoUrl: application?.documents?.photo || null,
+};
+
 
       // ✅ Save pass with studentId as the document ID
       await setDoc(doc(db, "passes", application.studentId), passData);
