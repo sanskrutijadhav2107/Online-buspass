@@ -274,7 +274,7 @@ const HomePage = () => {
   }, [studentId]);
 
   const handleApplyClick = () => {
-    navigate("/renewal");
+    navigate("/ApplicationForm");
   };
 
   const greetingMessage = () => {
