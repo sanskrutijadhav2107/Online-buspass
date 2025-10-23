@@ -64,7 +64,7 @@ const Sidebar = () => {
       </SidebarLink>
       
 
-      <SidebarLink as="div" onClick={toggleSubmenu}>
+      {/* <SidebarLink as="div" onClick={toggleSubmenu}>
               <IconLeft><FaClipboardCheck />Beneficary List</IconLeft>
               <FaChevronDown />
             </SidebarLink>
@@ -74,7 +74,7 @@ const Sidebar = () => {
                 <SubmenuLink to="/EmployeeList">Employee</SubmenuLink>
                 
               </>
-            )}
+            )} */}
     </SidebarContainer>
   );
 };
