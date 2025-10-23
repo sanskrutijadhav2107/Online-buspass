@@ -7,9 +7,9 @@ const AdminHomePage = () => {
   const navigate = useNavigate();
 
   const todayCounts = {
-    pending: 5,
-    approved: 12,
-    rejected: 3,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
   };
 
   return (

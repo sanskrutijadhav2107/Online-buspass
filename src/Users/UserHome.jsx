@@ -211,9 +211,6 @@
 
 
 
-
-
-
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
@@ -274,7 +271,7 @@ const HomePage = () => {
   }, [studentId]);
 
   const handleApplyClick = () => {
-    navigate("/renewal");
+    navigate("/ApplicationForm");
   };
 
   const greetingMessage = () => {
@@ -339,7 +336,7 @@ const HomePage = () => {
                 </p>
                 <p style={{ fontSize: "18px", marginTop: "10px" }}>
                   Expiry Date: <b>{passInfo.passEndDate}</b>
-                </p>
+                </p>+++++++++++++++++++++++++++++++++++++
 
                 {/* Progress Bar */}
                 <div style={{ marginTop: "20px", width: "100%" }}>
