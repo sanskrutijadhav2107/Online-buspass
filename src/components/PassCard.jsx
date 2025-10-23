@@ -1,3 +1,5 @@
+
+
 import React from "react";
 
 const PassCard = ({
@@ -11,7 +13,8 @@ const PassCard = ({
   from,
   to,
   startDate,
-  passEndDate
+  passEndDate,
+  photoUrl,
 }) => {
   const renderNumberColumn = () => (
     <div className="number-column">
@@ -24,13 +27,15 @@ const PassCard = ({
   return (
     <div className="page-container">
       <div className="main-section">
-        <div className="pass-card">
+        <div className="pass-card" id="idcard">
           {/* Header */}
           <div className="header">
             <img
               src="https://upload.wikimedia.org/wikipedia/en/4/45/Maharashtra_State_Road_Transport_Corporation_logo.png"
               alt="MSRTC Logo"
               className="logo"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
             />
             <div className="title">Maharashtra State Road Transport Corporation</div>
             <div className="subtitle">Student Monthly Concession Pass</div>
@@ -40,10 +45,33 @@ const PassCard = ({
           <div className="body">
             {renderNumberColumn()}
 
+            {/* Photo column */}
+            <div className="photo-col">
+              {photoUrl ? (
+                <img
+                  src={photoUrl}
+                  alt="Student"
+                  className="photo"
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                    const p = e.currentTarget.parentElement;
+                    if (p) {
+                      p.innerHTML =
+                        '<div class="photo-placeholder">Photo</div>';
+                    }
+                  }}
+                />
+              ) : (
+                <div className="photo-placeholder">Photo</div>
+              )}
+            </div>
+
             <div className="fields">
-              
+              {passId && <div className="line">ID No.: {passId}</div>}
               <div className="line">Student ID: {studentId}</div>
-              <div className="line">Name: {name}</div>
+              <div className="line">Student Name: {name}</div>
               <div className="line">Address: {address}</div>
               <div className="line">Birthdate: {birthdate}</div>
               <div className="line">Age: {age}</div>
@@ -66,72 +94,83 @@ const PassCard = ({
       </div>
 
       <style>{`
-.page-container {
-    display: flex;
-  }
-  .main-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-  }
-  .pass-card {
-    width: 380px;
-    background-color: #AEEBE7;
-    border: 1px solid black;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    font-size: 15px; /* bigger base font size */
-  }
-  .header {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  .logo {
-    width: 45px;
-    height: 45px;
-    margin-bottom: 6px;
-  }
-  .title {
-    font-weight: bold;
-    font-size: 16px; /* bigger title */
-  }
-  .subtitle {
-    font-size: 14px; /* bigger subtitle */
-    font-weight: bold;
-  }
-  .body {
-    display: grid;
-    grid-template-columns: 20px 1fr 20px;
-    gap: 5px;
-  }
-  .number-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-weight: bold;
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .fields {
-    display: flex;
-    flex-direction: column;
-    font-size: 15px; /* bigger field text */
-    padding: 0 5px;
-    line-height: 1.8; /* more vertical spacing */
-  }
-  .line {
-    height: 50px; /* let line-height control spacing */
-    margin-bottom: 6px; /* extra gap between lines */
-  }
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px; /* bigger footer text */
-    font-weight: bold;
-    margin-top: 25px;
-    padding: 0 5px;
-  }
+        .page-container { display: flex; }
+        .main-section { flex: 1; display: flex; justify-content: center; padding: 20px; }
+        .pass-card {
+          width: 380px;
+          background-color: #AEEBE7;
+          border: 1px solid black;
+          padding: 16px;
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+        }
+        .header { text-align: center; margin-bottom: 12px; }
+        .logo { width: 42px; height: 42px; margin-bottom: 6px; }
+        .title { font-weight: bold; font-size: 16px; }
+        .subtitle { font-size: 13px; font-weight: bold; }
+
+        /* Grid: numbers | photo | fields | numbers */
+        .body {
+          display: grid;
+          grid-template-columns: 20px 110px 1fr 20px;
+          gap: 6px;
+          align-items: start;
+        }
+
+        .number-column {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-weight: bold;
+          font-size: 11px;
+          line-height: 1.5;
+          user-select: none;
+        }
+
+        .photo-col { width: 110px; }
+        .photo {
+          width: 100%;
+          height: 140px;
+          object-fit: cover;
+          border: 1px solid #333;
+          border-radius: 6px;
+          background: #f6f6f6;
+          display: block;
+        }
+        .photo-placeholder {
+          width: 100%;
+          height: 140px;
+          border: 1px solid #333;
+          border-radius: 6px;
+          background: #f6f6f6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #888;
+          font-weight: 600;
+        }
+
+        .fields {
+          display: flex;
+          flex-direction: column;
+          font-size: 14px;
+          padding: 0 4px;
+          line-height: 1.6;
+        }
+        .line { margin-bottom: 6px; word-break: break-word; }
+
+        .footer {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+          font-weight: bold;
+          margin-top: 16px;
+          padding: 0 4px;
+        }
+
+        @media print {
+          #idcard { box-shadow: none; }
+        }
       `}</style>
     </div>
   );
